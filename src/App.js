@@ -21,9 +21,9 @@ class App extends Component
       sumofpenalty: "",
       penalty: [],
       charts: [],
+      flag: true
     }
     this.updateData = this.updateData.bind(this);
-    this.getChartData = this.getChartData.bind(this);
   }
 
   componentDidMount() 
@@ -36,6 +36,7 @@ class App extends Component
     });
   }
 
+  /*
   getChartData()
   {
     this.setState({
@@ -80,6 +81,7 @@ class App extends Component
       charts: [... this.state.charts, <Chart text="Chart Example" chartData={this.state.chartData}/>]
     })
   }
+  */
 
   handleChange = event => {
     this.setState({
@@ -92,6 +94,7 @@ class App extends Component
     Papa.parse(csvfile, {
       complete: this.updateData,
       header: true,
+      download: true,
       skipEmptyLines: true
     });
   };
@@ -150,11 +153,23 @@ class App extends Component
             date: "時間 = 2021/10/1"
           })
 
+          var penalty
+
+          if (this.state.flag === false)
+          {
+            penalty = parseFloat(e.ペナルティ)
+          }
+          else 
+          {
+            penalty = parseFloat(e.ペナルティ) * parseFloat(e.重み)
+          }
+
           this.setState({
-            charts: [... this.state.charts, <p>{e.仕様の表示名}のペナルティ = {e.ペナルティ}</p>, <p>{e.仕様の表示名}の重み = {e.重み}</p>, <Chart text={this.state.sequence} chartData={this.state.chartData}/>]
+            charts: [... this.state.charts, <p>{e.仕様の表示名}のペナルティ = {penalty}</p>, <p>{e.仕様の表示名}の重み = {e.重み}</p>, <Chart text={this.state.sequence} chartData={this.state.chartData}/>]
           })
 
-          allpenalty = allpenalty + parseFloat(e.ペナルティ)
+          allpenalty = allpenalty + penalty
+
         }
     })
 
@@ -162,10 +177,6 @@ class App extends Component
       sumofpenalty: "全体のペナルティ = " + allpenalty
     })
 
-  }
-
-  test()  {
-    console.log("hello")
   }
 
   render(){
@@ -192,8 +203,11 @@ class App extends Component
         </div>
         <div className="Text">
           <h1>{this.state.sumofpenalty}</h1>
-          <h2>{this.state.weight}</h2>
           <h2>{this.state.date}</h2>
+        </div>
+        <div className="RadioButton">
+          <p>重みをかける前<input type="radio" name="test"></input></p>
+          <p>重みをかけた後<input type="radio" name="test"></input></p>
         </div>
           <div className="Chart">
             {this.state.charts}
