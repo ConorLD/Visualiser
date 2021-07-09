@@ -1,0 +1,21 @@
+[
+    {
+        "date": "2021/07/06",
+        "name": "sunroof",
+        "weight": "0.5",
+        "penalty": "1736.73651",
+        "intercept": "0.4",
+        "slope": "0.25",
+        "sequence": "1 0 1 0 1 0"
+    },
+    {
+        "date": "2021/07/07",
+        "name": "sunroof",
+        "weight": "0.5",
+        "penalty": "1736.73651",
+        "intercept": "0.4",
+        "slope": "0.5",
+        "sequence": "1 1 1 0 1 0"
+    }
+
+]
