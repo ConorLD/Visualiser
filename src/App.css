@@ -37,7 +37,22 @@
   }
 }
 
+.Text {
+  text-align: left;
+}
+
 .Chart {
   height: 600px;
   width: 700px;
+  text-align: left;
+}
+
+.darkmode {
+  position: relative;
+  float: right;
+}
+
+.FileReader {
+  position: relative;
+  display: none;
 }

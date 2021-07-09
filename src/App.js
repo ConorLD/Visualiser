@@ -1,12 +1,11 @@
 import React, {Component} from 'react'
-import ReactDOM from "react-dom";
 import './App.css';
-import jsonData from './data/data.json'
 import Chart from './components/Chart'
 import ThemeToggle from './components/ThemeToggle'
 import Dropzone from './components/MyDropzone'
 import Papa from 'papaparse'
 import ParseData from './ParseData.js'
+import tsvData from './tsv/leveling_penalty.tsv'
 
 class App extends Component
 {
@@ -14,7 +13,7 @@ class App extends Component
   {
     super();
     this.state = {
-      chartData:{},
+      chartData: {},
       csvfile: {},
       date: "",
       name: "",
@@ -25,6 +24,16 @@ class App extends Component
     }
     this.updateData = this.updateData.bind(this);
     this.getChartData = this.getChartData.bind(this);
+  }
+
+  componentDidMount() 
+  {
+    Papa.parse(tsvData, {
+      complete: this.updateData,
+      download: true,
+      header: true,
+      skipEmptyLines: true
+    });
   }
 
   getChartData()
@@ -162,7 +171,9 @@ class App extends Component
   render(){
     return (
       <div className="App">
-        <ThemeToggle></ThemeToggle>
+        <div className="darkmode">
+          <ThemeToggle></ThemeToggle>
+        </div>
         <div className="FileReader">
           <h2>Import TSV File</h2>
           <input
@@ -179,9 +190,11 @@ class App extends Component
           <button onClick={this.importCSV}> Upload </button>
           <h3>... or click <button onClick={this.getChartData}>here</button> for an example</h3>
         </div>
+        <div className="Text">
           <h1>{this.state.sumofpenalty}</h1>
-          <h1>{this.state.weight}</h1>
-          <h1>{this.state.date}</h1>
+          <h2>{this.state.weight}</h2>
+          <h2>{this.state.date}</h2>
+        </div>
           <div className="Chart">
             {this.state.charts}
           </div>
