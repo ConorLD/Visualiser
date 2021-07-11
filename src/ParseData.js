@@ -1,49 +1,42 @@
-function ParseData(data)  {
-
-    var sequence = []
-
-    for (var key in data)
+function ParseData(data)  
+{
+  var intercept = parseFloat(data[3])
+  var slope = parseFloat(data[4])
+  var checkNum = parseInt(data[5]) 
+  var loopBarData = []
+  var labelsData = []
+  var lineData = []
+  var y 
+  var x 
+  var temp = 0
+  var temp2 = 0
+  
+  if (checkNum < 0)
+  {
+    temp = temp + 1
+    for (var i = checkNum; i < 0; i++)
     {
-        if (data.hasOwnProperty(key) && !isNaN(key))
-        {
-            sequence.push(data[key])
-        }
+      loopBarData.push(temp)
+      labelsData.push(i)
+      lineData.push(0)
+    }
+  }
+
+  for (x = 6; x < data.length; x++)
+  {
+    if (parseInt(data[x]) === 1)
+    {
+      temp = temp + 1
     }
 
-    if (sequence.length === 0)
-    {
-        console.log("Error")
-        return null
-    }
-    
-    var slope = data.slope
-    var intercept = parseFloat(data.intercept)
-    var sequenceLength = sequence.length
-    var loopBarData = []
-    var labelsData = []
-    var lineData = []
-    var y 
-    var x 
-    var loopData
-    var temp = 0
+    loopBarData.push(temp)
+    labelsData.push(data[x].toString())
+    y = slope*(x-6) + intercept
+    y = y.toFixed(2)
+    lineData.push(parseFloat(y))
+  }
 
-    for (x = 0; x < sequenceLength; x++)
-    {
-      loopData = sequence[x];
-      if (parseInt(loopData) === 1)
-      {
-        temp = temp + 1;
-      }
-    
-      loopBarData.push(temp);  
-      labelsData.push(x);
-
-      y = slope*x + intercept;
-      y = y.toFixed(2);
-      lineData.push(y);        
-    }
-
-    return [loopBarData, lineData, labelsData, sequence.toString().replace(/,/g, ' ')]
+    return [loopBarData, lineData, labelsData]
 }
 
 export default ParseData;

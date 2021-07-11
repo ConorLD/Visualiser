@@ -4,8 +4,9 @@ import Chart from './components/Chart'
 import ThemeToggle from './components/ThemeToggle'
 import Dropzone from './components/MyDropzone'
 import Papa from 'papaparse'
-import ParseData from './ParseData.js'
+import ParseData from './ParseData'
 import tsvData from './tsv/leveling_penalty.tsv'
+import ZChart from './components/ZChart';
 
 class App extends Component
 {
@@ -16,72 +17,141 @@ class App extends Component
       chartData: {},
       csvfile: {},
       date: "",
-      name: "",
-      weight: "",
-      sumofpenalty: "",
+      name: [],
+      weight: [],
       penalty: [],
+      sumofpenalty: 0,
       charts: [],
-      flag: true
+      flag: false,
+      backgroundColor: '#fff'
     }
     this.updateData = this.updateData.bind(this);
+    this.handler = this.handler.bind(this);
   }
 
   componentDidMount() 
   {
+    this.importCSVLocal()
+    this.getTotalPenalty()
+
+  }
+
+  handler() {
+    this.setState({
+      flag: !this.state.flag
+    })
+
+    if (this.state.flag)
+    {
+      this.setState({
+        backgroundColor: '#363537'
+      })
+    }
+
+    else
+    {
+
+      this.setState({
+        backgroundColor: '#fff'
+      })
+    }
+
+    console.log(this.state.backgroundColor)
+  }  
+  
+  importCSVLocal()
+  {
+    var counter = 0
     Papa.parse(tsvData, {
       complete: this.updateData,
       download: true,
-      header: true,
-      skipEmptyLines: true
-    });
+      header: false,
+      skipEmptyLines: true,
+      step: (results, parser) => {
+
+        if (counter === 0)
+        {
+          this.setState({
+            date: results.data
+          })
+        }
+
+        if (counter >= 2)
+        {
+          this.setInfo(results.data[0], results.data[1], results.data[2])
+          var parsedData = ParseData(results.data)
+          this.getChartData(parsedData[0], parsedData[1], parsedData[2], counter-2)
+          this.getTotalPenalty()
+
+        }
+
+        counter = counter + 1
+
+      }});
+
   }
 
-  /*
-  getChartData()
+  setInfo(name, weight, penalty)
   {
     this.setState({
-      chartData:
-      {
-        labels: [0, 1, 2, 3, 4, 5],
-        datasets: [
-            {
-                type: 'bar',
-                label: "名無し",
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                data: [0, 1, 2, 3, 4, 5],
-                borderWidth: 1        
-            },
-            {
-                type: 'line',
-                label: "行",
-                backgroundColor: "black",
-                data: [0.4, 1, 1.6, 2.2, 2.8, 3.4],
-                borderWidth: 3
-            }
+      name: [...this.state.name, name],
+      weight: [...this.state.weight, weight],
+      penalty: [...this.state.penalty, penalty],
+      //sumofpenalty: sumofpenalty + parseFloat(results.data[2])
+    })
+  }
+
+  getChartData(barData, lineData, labelData, index)
+  {
+
+    this.setState({
+      chartData: {
+        type: "mixed", // 1. Specify your mixed chart type.
+        plot: {
+          tooltip: {
+            text: "%t"
+          }
+        },
+        scaleX: {
+          labels: labelData,
+          itemsOverlap: true
+        },
+       
+        series: [ // 2. Specify the chart type for each series object.
+          {
+            type: 'bar',
+            values: barData,
+            aspect: "histogram",
+            text: "Bar Chart"
+          },
+          {
+            type: "line",
+            values: lineData,
+            text: "Line Chart"
+          }
         ]
       }
     })
 
     this.setState({
-      charts: [... this.state.charts, <Chart text="Chart Example" chartData={this.state.chartData}/>]
+      charts: [... this.state.charts, <p>{this.state.name[index]}のペナルティ = {this.state.penalty[index]}</p>, <p>{this.state.name[index]}の重み = {this.state.weight[index]}</p>, <ZChart chartData={this.state.chartData}/>]
+    })
+
+  }
+
+  getTotalPenalty()
+  {
+    var totalpenalty = 0
+    
+    for (var i = 0; i < this.state.penalty.length; i++)
+    {
+      totalpenalty = totalpenalty + parseFloat(this.state.penalty[i])
+    }
+
+    this.setState({
+      sumofpenalty: totalpenalty
     })
   }
-  */
 
   handleChange = event => {
     this.setState({
@@ -93,8 +163,7 @@ class App extends Component
     const { csvfile } = this.state;
     Papa.parse(csvfile, {
       complete: this.updateData,
-      header: true,
-      download: true,
+      header: false,
       skipEmptyLines: true
     });
   };
@@ -102,88 +171,13 @@ class App extends Component
   updateData(result) {
     var data = result.data
     console.log(data)
-    
-    var collectedData
-    var allpenalty = 0
-
-    data.forEach(e => {
-        collectedData = ParseData(e)
-        if (collectedData != null)
-        {
-          this.setState({
-            chartData:
-            {
-              labels: collectedData[2],
-              datasets: [
-                  {
-                      type: 'bar',
-                      label: "名無し",
-                      backgroundColor: [
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(255, 206, 86, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(153, 102, 255, 0.2)',
-                          'rgba(255, 159, 64, 0.2)'
-                      ],
-                      borderColor: [
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(255, 206, 86, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(153, 102, 255, 1)',
-                          'rgba(255, 159, 64, 1)'
-                      ],
-                      data: collectedData[0],
-                      borderWidth: 1        
-                  },
-                  {
-                      type: 'line',
-                      label: "行",
-                      backgroundColor: "black",
-                      data: collectedData[1],
-                      borderWidth: 3
-                  }
-              ]
-            }
-          })
-
-          this.setState({
-            sequence: collectedData[3],
-            date: "時間 = 2021/10/1"
-          })
-
-          var penalty
-
-          if (this.state.flag === false)
-          {
-            penalty = parseFloat(e.ペナルティ)
-          }
-          else 
-          {
-            penalty = parseFloat(e.ペナルティ) * parseFloat(e.重み)
-          }
-
-          this.setState({
-            charts: [... this.state.charts, <p>{e.仕様の表示名}のペナルティ = {penalty}</p>, <p>{e.仕様の表示名}の重み = {e.重み}</p>, <Chart text={this.state.sequence} chartData={this.state.chartData}/>]
-          })
-
-          allpenalty = allpenalty + penalty
-
-        }
-    })
-
-    this.setState({
-      sumofpenalty: "全体のペナルティ = " + allpenalty
-    })
-
   }
 
   render(){
     return (
       <div className="App">
         <div className="darkmode">
-          <ThemeToggle></ThemeToggle>
+          <ThemeToggle handler = {this.handler}></ThemeToggle>
         </div>
         <div className="FileReader">
           <h2>Import TSV File</h2>
