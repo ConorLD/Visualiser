@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+  font-size: 10px;
 }
 
 .App-logo {
@@ -42,8 +42,7 @@
 }
 
 .Chart {
-  height: 600px;
-  width: 600px;
+ 
   text-align: left;
 }
 
@@ -54,7 +53,6 @@
 
 .FileReader {
   position: relative;
-  display: none;
 }
 
 .RadioButton {

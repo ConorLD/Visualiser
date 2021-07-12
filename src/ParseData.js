@@ -6,6 +6,7 @@ function ParseData(data)
   var loopBarData = []
   var labelsData = []
   var lineData = []
+  var errorData = []
   var y 
   var x 
   var temp = 0
@@ -18,7 +19,8 @@ function ParseData(data)
     {
       loopBarData.push(temp)
       labelsData.push(i)
-      lineData.push(0)
+      lineData.push(null)
+      errorData.push(null)
     }
   }
 
@@ -34,9 +36,18 @@ function ParseData(data)
     y = slope*(x-6) + intercept
     y = y.toFixed(2)
     lineData.push(parseFloat(y))
+
+    if (temp > parseFloat(y))
+    {
+      errorData.push([null,(temp-parseFloat(y))])
+    }
+    else
+    {
+      errorData.push([(parseFloat(y)-temp),null])
+    }
   }
 
-    return [loopBarData, lineData, labelsData]
+    return [loopBarData, lineData, labelsData.toString().replace(/,/g, ' '), errorData]
 }
 
 export default ParseData;

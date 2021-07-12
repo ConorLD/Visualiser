@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import 'zingchart/es6';
-import ZingChart,{Bar} from 'zingchart-react';
+import ZingChart from 'zingchart-react';
 
 
 class ZChart extends Component
