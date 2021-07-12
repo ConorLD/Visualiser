@@ -37,7 +37,7 @@ class App extends Component
 
   componentDidMount() 
   {
-    //this.importCSV()
+    this.importCSV()
   }
 
   handler() {
@@ -119,8 +119,8 @@ class App extends Component
       chartData: {
         type: "mixed", // 1. Specify your mixed chart type.
         title: {
-          text: labelData,
-          fontSize: "10px"
+          text: this.state.name[index] + " ペナルティ (全体) = " + this.state.normalPenalty[index] + " (" + this.state.sumofpenalty + ") 重み = " + this.state.weight[index],
+          fontSize: "12px"
         },
         'scroll-x': {
 
@@ -145,12 +145,14 @@ class App extends Component
        
         series: [ // 2. Specify the chart type for each series object.
           {
-            type: 'bar',
-            backgroundColor: "#FFE4B5",
-            borderColor: "black",
-            borderWidth: 1,
+            type: 'line',
+            lineColor: "#FFE4B5",
+            lineWidth: 4,
             values: barData,
-            aspect: "histogram",
+            aspect: "stepped",
+            marker: {
+              visible: false
+            },
             errors: errorData,
             error: {
               size: "7px",
@@ -165,14 +167,14 @@ class App extends Component
               'line-width':3,
               alpha:0.7
             },
-            text: "Bar Chart" 
+            text: "Some Info" 
           },
           {
             type: "line",
-            lineColor: "black",
+            lineColor: "blue",
+            lineWidth: 4,
             values: lineData,
-            aspect: "histogram",
-            text: "Line Chart",
+            text: "Other Info",
             marker: {
               visible: false
             }
@@ -183,7 +185,7 @@ class App extends Component
 
     this.setState({
       penalty: this.state.normalPenalty,
-      charts: [... this.state.charts, <p>{this.state.name[index]} ペナルティ (全体) = {this.state.normalPenalty[index]} ({this.state.sumofpenalty}) 重み = {this.state.weight[index]}</p>, <ZChart chartData={this.state.chartData}/>]
+      charts: [... this.state.charts, <ZChart chartData={this.state.chartData}/>],
     })
 
     this.getTotalPenalty()
