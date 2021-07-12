@@ -32,8 +32,6 @@ class App extends Component
   componentDidMount() 
   {
     this.importCSVLocal()
-    this.getTotalPenalty()
-
   }
 
   handler() {
@@ -44,19 +42,26 @@ class App extends Component
     if (this.state.flag)
     {
       this.setState({
-        backgroundColor: '#363537'
+        backgroundColor: '#fff'
       })
     }
 
     else
     {
-
       this.setState({
-        backgroundColor: '#fff'
+        backgroundColor: '#363537'
       })
     }
 
-    console.log(this.state.backgroundColor)
+    this.setState({
+      charts: [],
+      name: [],
+      weight: [],
+      penalty: []
+    })
+
+    this.importCSVLocal()
+
   }  
   
   importCSVLocal()
@@ -81,8 +86,6 @@ class App extends Component
           this.setInfo(results.data[0], results.data[1], results.data[2])
           var parsedData = ParseData(results.data)
           this.getChartData(parsedData[0], parsedData[1], parsedData[2], counter-2)
-          this.getTotalPenalty()
-
         }
 
         counter = counter + 1
@@ -97,23 +100,26 @@ class App extends Component
       name: [...this.state.name, name],
       weight: [...this.state.weight, weight],
       penalty: [...this.state.penalty, penalty],
-      //sumofpenalty: sumofpenalty + parseFloat(results.data[2])
     })
   }
 
   getChartData(barData, lineData, labelData, index)
   {
 
+    console.log(this.state.backgroundColor)
     this.setState({
       chartData: {
         type: "mixed", // 1. Specify your mixed chart type.
+        title: {
+          text: labelData
+        },
+        backgroundColor: this.state.backgroundColor,
         plot: {
           tooltip: {
             text: "%t"
           }
         },
         scaleX: {
-          labels: labelData,
           itemsOverlap: true
         },
        
@@ -127,7 +133,10 @@ class App extends Component
           {
             type: "line",
             values: lineData,
-            text: "Line Chart"
+            text: "Line Chart",
+            marker: {
+              visible: false
+            }
           }
         ]
       }
@@ -136,6 +145,8 @@ class App extends Component
     this.setState({
       charts: [... this.state.charts, <p>{this.state.name[index]}のペナルティ = {this.state.penalty[index]}</p>, <p>{this.state.name[index]}の重み = {this.state.weight[index]}</p>, <ZChart chartData={this.state.chartData}/>]
     })
+
+    this.getTotalPenalty()
 
   }
 
@@ -196,8 +207,7 @@ class App extends Component
           <h3>... or click <button onClick={this.getChartData}>here</button> for an example</h3>
         </div>
         <div className="Text">
-          <h1>{this.state.sumofpenalty}</h1>
-          <h2>{this.state.date}</h2>
+          <h1>全体のペナルティ = {this.state.sumofpenalty} 日時 = {this.state.date}</h1>
         </div>
         <div className="RadioButton">
           <p>重みをかける前<input type="radio" name="test"></input></p>

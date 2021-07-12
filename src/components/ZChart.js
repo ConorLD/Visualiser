@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import 'zingchart/es6';
-import ZingChart from 'zingchart-react';
+import ZingChart,{Bar} from 'zingchart-react';
 
 
 class ZChart extends Component
@@ -13,13 +13,13 @@ class ZChart extends Component
     }
 
     static defaultProps = {
-        backgroundColor: "#fff"
+       theme: 'light'  
     }
 
     render() {
         return (
           <div >
-            <ZingChart data={this.state.chartData} />
+            <ZingChart data={this.state.chartData}/>
           </div>
         );
     }

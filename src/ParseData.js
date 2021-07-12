@@ -30,7 +30,7 @@ function ParseData(data)
     }
 
     loopBarData.push(temp)
-    labelsData.push(data[x].toString())
+    labelsData.push(data[x])
     y = slope*(x-6) + intercept
     y = y.toFixed(2)
     lineData.push(parseFloat(y))
