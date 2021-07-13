@@ -1,5 +1,5 @@
 .App {
-  font-size: 10px;
+  font-size: 14px;
 }
 
 .App-logo {
@@ -53,10 +53,16 @@
 
 .FileReader {
   position: relative;
+  text-align: center;
 }
 
 .RadioButton {
   position: relative;  
   float: right;
+}
+
+h1 {
+  margin: 0;
+    display: inline-block;
 }
 

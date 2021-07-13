@@ -14,6 +14,7 @@ class App extends Component
     super();
     this.state = {
       chartData: {},
+      graphset: [],
       csvfile: tsvData,
       date: "",
       name: [],
@@ -21,6 +22,9 @@ class App extends Component
       penalty: [],
       normalPenalty: [],
       mulPenalty: [],
+      barData: [],
+      lineData: [],
+      errorData: [],
       sumofpenalty: 0,
       charts: [],
       flag: false,
@@ -64,10 +68,9 @@ class App extends Component
   
   importCSV()
   {
-
-    console.log("hello")
     this.setState({
       charts: [],
+      graphset: [],
       name: [],
       weight: [],
       penalty: [],
@@ -92,8 +95,8 @@ class App extends Component
 
         if (counter >= 2)
         {
-          this.setInfo(results.data[0], results.data[1], results.data[2])
           var parsedData = ParseData(results.data)
+          this.setInfo(results.data[0], results.data[1], results.data[2])
           this.getChartData(parsedData[0], parsedData[1], parsedData[2], parsedData[3], counter-2)
         }
 
@@ -109,85 +112,84 @@ class App extends Component
       name: [...this.state.name, name],
       weight: [...this.state.weight, weight],
       normalPenalty: [...this.state.normalPenalty, penalty],
-      mulPenalty: [...this.state.mulPenalty, parseFloat(penalty)*parseFloat(weight)]
+      mulPenalty: [...this.state.mulPenalty, parseFloat(penalty)*parseFloat(weight)],
     })
   }
 
   getChartData(barData, lineData, labelData, errorData, index)
   {
+
     this.setState({
-      chartData: {
-        type: "mixed", // 1. Specify your mixed chart type.
-        title: {
-          text: this.state.name[index] + " ペナルティ (全体) = " + this.state.normalPenalty[index] + " (" + this.state.sumofpenalty + ") 重み = " + this.state.weight[index],
-          fontSize: "12px"
-        },
-        'scroll-x': {
-
-        },
-        'scroll-y': {
-
-        },
-        backgroundColor: this.state.backgroundColor,
-        plot: {
-          tooltip: {
-            text: "%t"
-          }
-        },
-        scaleX: {
-          itemsOverlap: true,
-          values: this.state.values,
-          zooming: true,
-        },
-        scaleY: {
-          zooming: true,
-        },
-       
-        series: [ // 2. Specify the chart type for each series object.
-          {
-            type: 'line',
-            lineColor: "#FFE4B5",
-            lineWidth: 4,
-            values: barData,
-            aspect: "stepped",
-            marker: {
-              visible: false
-            },
-            errors: errorData,
-            error: {
-              size: "7px",
-                rules: [
-                     {
-                      rule: "%v == [null,%v]",
-                      'line-color': "green"
-                    }
-                  ],
-           
-              'line-color': "#cc0000",
-              'line-width':3,
-              alpha:0.7
-            },
-            text: "Some Info" 
+      graphset: [...this.state.graphset, {
+          type: "mixed", // 1. Specify your mixed chart type.
+          title: {
+            text: this.state.name[index] + " のペナルティ = " + this.state.normalPenalty[index] + " 重み = " + this.state.weight[index],
+            fontSize: "12px"
           },
-          {
-            type: "line",
-            lineColor: "blue",
-            lineWidth: 4,
-            values: lineData,
-            text: "Other Info",
-            marker: {
-              visible: false
+          'scroll-x': {
+
+          },
+          'scroll-y': {
+
+          },
+          backgroundColor: this.state.backgroundColor,
+          plot: {
+            tooltip: {
+              text: "%t"
             }
-          }
-        ]
-      }
+          },
+          scaleX: {
+            itemsOverlap: true,
+            values: this.state.values,
+            zooming: true,
+          },
+          scaleY: {
+            zooming: true,
+          },
+        
+          series: [ // 2. Specify the chart type for each series object.
+            {
+              type: 'line',
+              lineColor: "#FFE4B5",
+              lineWidth: 2,
+              values: barData,
+              aspect: "stepped",
+              marker: {
+                visible: false
+              },
+              errors: errorData,
+              error: {
+                size: "7px",
+                  rules: [
+                      {
+                        rule: "%v == [null,%v]",
+                        'line-color': "green"
+                      }
+                    ],
+            
+                'line-color': "#cc0000",
+                'line-width':2,
+                alpha:0.7
+              },
+              text: "Some Info" 
+            },
+            {
+              type: "line",
+              lineColor: "blue",
+              lineWidth: 2,
+              values: lineData,
+              text: "Other Info",
+              marker: {
+                visible: false
+              }
+            }
+          ]
+        }]
     })
 
     this.setState({
       penalty: this.state.normalPenalty,
-      charts: [... this.state.charts, <ZChart chartData={this.state.chartData}/>],
     })
-
     this.getTotalPenalty()
 
   }
@@ -235,6 +237,16 @@ class App extends Component
   updateData(result) {
     var data = result.data
     console.log(data)
+    
+    this.setState({
+      chartData: {
+        graphset: this.state.graphset
+      },
+    })
+
+    this.setState({
+      charts: <ZChart chartData={this.state.chartData}></ZChart>  
+    })
   }
 
   render(){
@@ -242,19 +254,20 @@ class App extends Component
       <div className="App">
        
         <div className="FileReader">
-          <h2>Import TSV or CSV File</h2>
-          <Dropzone handleChange2={this.handleChange}></Dropzone>
-          <p></p>
-        </div>
         <div className="darkmode">
           <ThemeToggle handler = {this.handler}></ThemeToggle>
         </div>
-        <div className="Text">
-          <h1>全体のペナルティ = {this.state.sumofpenalty} 日時 = {this.state.date}</h1>
+          <h2>Import TSV or CSV File</h2>
+          <Dropzone handleChange2={this.handleChange}></Dropzone>
+          <p></p>
+          
         </div>
-        <div className="RadioButton">
-          <p>重みをかける前<input type="radio" name="test" onClick={this.normalWeight} defaultChecked></input></p>
-          <p>重みをかけた後<input type="radio" name="test" onClick={this.multiplyWeight}></input></p>
+        <div className="Text">
+          <h1>全体のペナルティ = {this.state.sumofpenalty} &emsp; 日時 = {this.state.date}</h1>
+          <div className="RadioButton">
+            <p>重みをかける前<input type="radio" name="test" onClick={this.normalWeight} defaultChecked></input></p>
+            <p>重みをかけた後<input type="radio" name="test" onClick={this.multiplyWeight}></input></p>
+        </div>
         </div>
           <div className="Chart">
             {this.state.charts}

@@ -13,7 +13,7 @@ function ThemeToggle({handler})
     return (
     <ThemeProvider theme={isToggled === false ? lightTheme : darkTheme}>
         <GlobalStyles/>
-        <StyledApp><Switch isToggled={isToggled} onToggle={() => {setIsToggled(!isToggled); {handler()}}}></Switch><p>Darkmode</p></StyledApp>
+        <StyledApp><Switch isToggled={isToggled} onToggle={() => {setIsToggled(!isToggled); {handler()}}}></Switch></StyledApp>
     </ThemeProvider>    
     );
 }
