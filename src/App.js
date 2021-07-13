@@ -96,7 +96,7 @@ class App extends Component
         if (counter >= 2)
         {
           var parsedData = ParseData(results.data)
-          this.setInfo(results.data[0], results.data[1], results.data[2])
+          this.setInfo(results.data[0], results.data[1], results.data[2], results.data)
           this.getChartData(parsedData[0], parsedData[1], parsedData[2], parsedData[3], counter-2)
         }
 
@@ -106,19 +106,21 @@ class App extends Component
 
   }
 
-  setInfo(name, weight, penalty)
+  setInfo(name, weight, penalty, data)
   {
     this.setState({
       name: [...this.state.name, name],
       weight: [...this.state.weight, weight],
       normalPenalty: [...this.state.normalPenalty, penalty],
       mulPenalty: [...this.state.mulPenalty, parseFloat(penalty)*parseFloat(weight)],
+      values: data[5] + ":" + (data.length-6+parseFloat(data[5]))  + ":1"
     })
+    console.log(this.state.values)
   }
 
   getChartData(barData, lineData, labelData, errorData, index)
   {
-
+    
     this.setState({
       graphset: [...this.state.graphset, {
           type: "mixed", // 1. Specify your mixed chart type.

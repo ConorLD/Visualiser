@@ -47,7 +47,7 @@ function ParseData(data)
     }
   }
 
-    return [loopBarData, lineData, labelsData.toString().replace(/,/g, ' '), errorData]
+    return [loopBarData, lineData, labelsData, errorData]
 }
 
 export default ParseData;
