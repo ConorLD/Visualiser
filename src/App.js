@@ -124,7 +124,8 @@ class App extends Component
           type: "mixed", // 1. Specify your mixed chart type.
           title: {
             text: this.state.name[index] + " のペナルティ = " + this.state.normalPenalty[index] + " 重み = " + this.state.weight[index],
-            fontSize: "12px"
+            color: "#777777",
+            fontSize: "14px",
           },
           'scroll-x': {
 
