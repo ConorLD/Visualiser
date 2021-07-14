@@ -51,20 +51,21 @@
   text-align: left;
 }
 
-.darkmode {
-  position: relative;
-  float: right;
-  padding-top: 10px;
+.Darkmode {
+  position: absolute;
+  right: 0;
+  top: 10%;
+  width: 5em;
+  margin-top: -2.5em;
 
 }
 
 .FileReader {
   text-align: left;
-  padding-top: 10px;
 }
 
 .RadioButton {
-  position: relative;  
+  position: relative;
   float: right;
 }
 
@@ -78,4 +79,8 @@ strong {
   width: 120px;
   border: 1px solid;
   text-align: center;
+}
+
+.DropFile {
+  padding-top: 10px;
 }

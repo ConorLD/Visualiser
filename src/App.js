@@ -104,7 +104,6 @@ class App extends Component
 
         if (counter >= 2)
         {
-          console.log(results)
           var parsedData = ParseData(results.data)
           this.setInfo(results.data[0], results.data[1], results.data[2], parsedData[5], datalength)
           this.getChartData(parsedData[0], parsedData[1], parsedData[2], parsedData[3], parsedData[4],counter-2)
@@ -129,7 +128,6 @@ class App extends Component
 
   getChartData(barData, lineData, labelData, errorData, compareLineErr, index)
   {
-    console.log(lineData,errorData)
     this.setState({
       graphset: [...this.state.graphset, {
           type: "mixed", 
@@ -319,10 +317,7 @@ class App extends Component
     return (
       <div className="App">
         <div className="FileReader">
-        <div>
-          <Dropzone handleChange2={this.handleChange}></Dropzone>
-        </div>
-        <div className="darkmode">
+        <div className="Darkmode">
           <ThemeToggle handler = {this.handler}></ThemeToggle>
         </div>
             <p>日時 = {this.state.date}</p>
@@ -337,6 +332,9 @@ class App extends Component
           <div className="Chart" style={{backgroundColor: `${this.state.backgroundColor}`}}>
             {this.state.charts}
           </div>
+          <div className="DropFile">
+          <Dropzone handleChange2={this.handleChange}></Dropzone>
+        </div>
       </div>
       
     );

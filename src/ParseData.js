@@ -13,7 +13,6 @@ function ParseData(data)
   var compareLineErr = []
   var counter = 0
 
-  console.log(checkNum)
   if (checkNum < 0)
   {
     counter = parseInt(checkNum)
@@ -32,7 +31,6 @@ function ParseData(data)
     checkNum = 0 // hard fix for when data[5] is not definied
   }
 
-  console.log(loopBarData)
   for (x = 6; x < data.length; x++)
   {
     if (parseInt(data[x]) === 1)
