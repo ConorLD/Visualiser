@@ -28,7 +28,8 @@ class App extends Component
       sumofpenalty: 0,
       charts: [],
       flag: false,
-      backgroundColor: '#fff',
+      backgroundColor: '#363537',
+      textColor: "#fffafa",
       values: "0:50:1"
     }
     this.updateData = this.updateData.bind(this);
@@ -52,14 +53,16 @@ class App extends Component
     if (this.state.flag)
     {
       this.setState({
-        backgroundColor: '#fff'
+        backgroundColor: '#363537',
+        textColor: '#fffafa'
       })
     }
 
     else
     {
       this.setState({
-        backgroundColor: '#363537'
+        backgroundColor: '#fffafa',
+        textColor: '#363537'
       })
     }
 
@@ -79,6 +82,7 @@ class App extends Component
     })
 
     var counter = 0
+    var datalength
     Papa.parse(this.state.csvfile, {
       complete: this.updateData,
       download: true,
@@ -93,11 +97,17 @@ class App extends Component
           })
         }
 
+        if (counter === 1)
+        {
+            datalength = results.data[results.data.length-1]
+        }
+
         if (counter >= 2)
         {
+          console.log(results)
           var parsedData = ParseData(results.data)
-          this.setInfo(results.data[0], results.data[1], results.data[2], results.data)
-          this.getChartData(parsedData[0], parsedData[1], parsedData[2], parsedData[3], counter-2)
+          this.setInfo(results.data[0], results.data[1], results.data[2], parsedData[5], datalength)
+          this.getChartData(parsedData[0], parsedData[1], parsedData[2], parsedData[3], parsedData[4],counter-2)
         }
 
         counter = counter + 1
@@ -106,27 +116,26 @@ class App extends Component
 
   }
 
-  setInfo(name, weight, penalty, data)
+  setInfo(name, weight, penalty, values,datalength)
   {
     this.setState({
       name: [...this.state.name, name],
       weight: [...this.state.weight, weight],
-      normalPenalty: [...this.state.normalPenalty, penalty],
+      normalPenalty: [...this.state.normalPenalty, (Math.round(penalty*100)/100).toFixed(2)],
       mulPenalty: [...this.state.mulPenalty, parseFloat(penalty)*parseFloat(weight)],
-      values: data[5] + ":" + (data.length-6+parseFloat(data[5]))  + ":1"
+      values: values + ":" + datalength  + ":1"
     })
-    console.log(this.state.values)
   }
 
-  getChartData(barData, lineData, labelData, errorData, index)
+  getChartData(barData, lineData, labelData, errorData, compareLineErr, index)
   {
-    
+    console.log(lineData,errorData)
     this.setState({
       graphset: [...this.state.graphset, {
-          type: "mixed", // 1. Specify your mixed chart type.
+          type: "mixed", 
           title: {
-            text: this.state.name[index] + " のペナルティ = " + this.state.normalPenalty[index] + " 重み = " + this.state.weight[index],
-            color: "#777777",
+            text: this.state.name[index] + "    ペナルティ x  重み = " + (this.state.normalPenalty[index]*this.state.weight[index]),
+            color: this.state.textColor,
             fontSize: "14px",
           },
           'scroll-x': {
@@ -138,53 +147,105 @@ class App extends Component
           backgroundColor: this.state.backgroundColor,
           plot: {
             tooltip: {
-              text: "%t"
+              text: "%v",
             }
           },
           scaleX: {
-            itemsOverlap: true,
+            lineColor: this.state.textColor,
+            lineWidth: 2,
             values: this.state.values,
             zooming: true,
+            item: {
+              'font-color': this.state.textColor,
+              "text-align": "right"
+            },
+            tick: {
+              'line-color': this.state.textColor,
+            },
+            guide: {
+              'line-width':2,
+              'line-style': "solid", //"solid", "dotted", "dashed", "dashdot"
+              'line-color': "#808080",
+              alpha: 0.4,
+              visible: true
+            },
+            
           },
           scaleY: {
+            lineColor: this.state.textColor,
+            lineWidth: 2,
+            item: {
+              'font-color': this.state.textColor,
+            },
+            tick: {
+              'line-color': this.state.textColor,
+            },
             zooming: true,
+            guide: {
+              'line-width':2,
+              'line-style': "solid", //"solid", "dotted", "dashed", "dashdot"
+              'line-color': "#808080",
+              alpha: 0.4,
+              visible: true,
+              itemsOverlap: true
+            }
           },
         
           series: [ // 2. Specify the chart type for each series object.
             {
               type: 'line',
-              lineColor: "#FFE4B5",
-              lineWidth: 2,
               values: barData,
-              aspect: "stepped",
+              lineColor: "#66b2ff",
+              lineWidth: 2,
               marker: {
-                visible: false
+                visible: false,
               },
-              errors: errorData,
-              error: {
-                size: "7px",
-                  rules: [
-                      {
-                        rule: "%v == [null,%v]",
-                        'line-color': "green"
-                      }
-                    ],
-            
-                'line-color': "#cc0000",
-                'line-width':2,
-                alpha:0.7
-              },
-              text: "Some Info" 
+              text: "" ,
+              animation: {
+                effect: 1,
+                method: 0,
+                sequence: 1
+              }
             },
             {
               type: "line",
-              lineColor: "blue",
-              lineWidth: 2,
+              lineColor: this.state.textColor,
+              lineWidth: 1,
               values: lineData,
-              text: "Other Info",
+              text: "",
               marker: {
                 visible: false
+              },
+              animation: {
+                effect: 1,
+                method: 0,
+                sequence: 1
               }
+            },
+            {
+              type: "line",
+              lineColor: "#ff6666",
+              lineWidth: 4,
+              values: errorData,
+              "data-series" : compareLineErr,
+              marker: {
+                visible: false
+              },     
+             
+                rules: [{
+                    rule: "%v <= %data-series",
+                    lineColor: "#00cc00"
+                }],
+                  tooltip: {
+                    "text": "%v, data = %data-series"
+                  },
+                   animation: {
+                    effect: 1,
+                    method: 0,
+                    sequence: 1 ,
+                 }
+              
+                  
             }
           ]
         }]
@@ -245,34 +306,34 @@ class App extends Component
       chartData: {
         graphset: this.state.graphset
       },
-    })
+    }, ()=> console.log(this.state.chartData))
 
     this.setState({
       charts: <ZChart chartData={this.state.chartData}></ZChart>  
     })
   }
 
+ 
   render(){
     return (
       <div className="App">
-       
         <div className="FileReader">
+        <div>
+          <Dropzone handleChange2={this.handleChange}></Dropzone>
+        </div>
         <div className="darkmode">
           <ThemeToggle handler = {this.handler}></ThemeToggle>
         </div>
-          <h2>Import TSV or CSV File</h2>
-          <Dropzone handleChange2={this.handleChange}></Dropzone>
-          <p></p>
-          
+            <p>日時 = {this.state.date}</p>
         </div>
         <div className="Text">
-          <h1>全体のペナルティ = {this.state.sumofpenalty} &emsp; 日時 = {this.state.date}</h1>
+          <h1>          全体のペナルティ = <strong>{this.state.sumofpenalty.toFixed(3)}</strong></h1>
           <div className="RadioButton">
             <p>重みをかける前<input type="radio" name="test" onClick={this.normalWeight} defaultChecked></input></p>
             <p>重みをかけた後<input type="radio" name="test" onClick={this.multiplyWeight}></input></p>
         </div>
         </div>
-          <div className="Chart">
+          <div className="Chart" style={{backgroundColor: `${this.state.backgroundColor}`}}>
             {this.state.charts}
           </div>
       </div>

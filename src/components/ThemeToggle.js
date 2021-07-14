@@ -8,7 +8,7 @@ const StyledApp = styled.div``;
 function ThemeToggle({handler})  
 {
 
-    const [isToggled, setIsToggled] = useState(false)
+    const [isToggled, setIsToggled] = useState(true)
 
     return (
     <ThemeProvider theme={isToggled === false ? lightTheme : darkTheme}>

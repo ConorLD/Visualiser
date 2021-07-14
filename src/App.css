@@ -1,5 +1,9 @@
 .App {
   font-size: 14px;
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+  padding-top: 10px;
 }
 
 .App-logo {
@@ -38,22 +42,25 @@
 }
 
 .Text {
-  text-align: left;
+  text-align: center;
+  padding-bottom: 40px;
 }
 
 .Chart {
- 
+  border-style: dashed;
   text-align: left;
 }
 
 .darkmode {
   position: relative;
   float: right;
+  padding-top: 10px;
+
 }
 
 .FileReader {
-  position: relative;
-  text-align: center;
+  text-align: left;
+  padding-top: 10px;
 }
 
 .RadioButton {
@@ -66,3 +73,9 @@ h1 {
     display: inline-block;
 }
 
+strong {
+  display: inline-block;
+  width: 120px;
+  border: 1px solid;
+  text-align: center;
+}

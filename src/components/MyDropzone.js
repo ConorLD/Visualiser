@@ -13,7 +13,7 @@ const getColor = (props) => {
   if (props.isDragActive) {
       return '#2196f3';
   }
-  return '#eeeeee';
+  return '#afafaf';
 }
 
 const Container = styled.div`
@@ -30,18 +30,20 @@ const Container = styled.div`
   color: #bdbdbd;
   outline: none;
   transition: border .24s ease-in-out;
+  font-weight: bold;
 `;
 
 function StyledDropzone({handleChange2}) {
 
   return (
     <Dropzone onDrop={acceptedFiles => handleChange2(acceptedFiles)}>
-  {({getRootProps, getInputProps}) => (
+  {({getRootProps, getInputProps, isDragAccept, isDragActive, isDragReject}) => (
     <section>
       <div {...getRootProps()} className="container">
         <Container>
           <input {...getInputProps()} />
-          <p>Drag 'n' drop some files here, or click to select files</p>
+          <p>Import TSV or CSV files</p>
+          <em>Drag and drop or click to select your file</em>
         </Container>
       </div>
     </section>
