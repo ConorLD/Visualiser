@@ -304,6 +304,7 @@ class App extends Component
     
     this.setState({
       chartData: {
+        layout: "horizontal",
         graphset: this.state.graphset
       },
     }, ()=> console.log(this.state.chartData))
