@@ -28,9 +28,11 @@ class App extends Component
       sumofpenalty: 0,
       charts: [],
       flag: false,
+      showing: true,
       backgroundColor: '#363537',
       textColor: "#fffafa",
-      values: "0:50:1"
+      values: "",
+      yvalues: ""
     }
     this.updateData = this.updateData.bind(this);
     this.handler = this.handler.bind(this);
@@ -105,7 +107,7 @@ class App extends Component
         if (counter >= 2)
         {
           var parsedData = ParseData(results.data)
-          this.setInfo(results.data[0], results.data[1], results.data[2], parsedData[5], datalength)
+          this.setInfo(results.data[0], results.data[1], results.data[2], parsedData[5], parsedData[0])
           this.getChartData(parsedData[0], parsedData[1], parsedData[2], parsedData[3], parsedData[4],counter-2)
         }
 
@@ -115,19 +117,21 @@ class App extends Component
 
   }
 
-  setInfo(name, weight, penalty, values,datalength)
+  setInfo(name, weight, penalty, values, datalength)
   {
     this.setState({
       name: [...this.state.name, name],
       weight: [...this.state.weight, weight],
       normalPenalty: [...this.state.normalPenalty, (Math.round(penalty*100)/100).toFixed(2)],
       mulPenalty: [...this.state.mulPenalty, parseFloat(penalty)*parseFloat(weight)],
-      values: values + ":" + datalength  + ":1"
+      values: values + ":" + (datalength[datalength.length-1][0]) + ":1",
+      yvalues: "0:" + (datalength[datalength.length-1][1]) + ":1"
     })
   }
 
   getChartData(barData, lineData, labelData, errorData, compareLineErr, index)
   {
+    console.log(this.state.yvalues)
     this.setState({
       graphset: [...this.state.graphset, {
           type: "mixed", 
@@ -140,7 +144,7 @@ class App extends Component
           subtitle: {
             text: this.state.normalPenalty[index] + " x " + this.state.weight[index] + " = " + (this.state.normalPenalty[index]*this.state.weight[index]),
             color: this.state.textColor,
-            offsetX: 35.0
+            fontSize: "13px",
           },
 
           'scroll-x': {
@@ -178,6 +182,7 @@ class App extends Component
           },
           scaleY: {
             lineColor: this.state.textColor,
+            values: this.state.yvalues,
             lineWidth: 2,
             item: {
               'font-color': this.state.textColor,
@@ -359,8 +364,13 @@ class App extends Component
             {this.state.charts}
           </div>
           <div className="DropFile">
-          <Dropzone handleChange2={this.handleChange}></Dropzone>
+            {
+              this.state.showing 
+              ?  <Dropzone handleChange2={this.handleChange}></Dropzone>
+              : null
+            }
         </div>
+        <p><input type ="checkbox" onClick={() => { this.setState({showing: !this.state.showing})}} defaultChecked></input></p>
       </div>
       
     );
