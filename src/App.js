@@ -232,19 +232,35 @@ class App extends Component
               values: errorData,
               "data-series" : compareLineErr,
               marker: {
-                visible: false
+                type: "triangle",
+                backgroundColor: "#00cc00",
+                'border-color': "#00cc00",
+                size: "5",
+                visible: true,
+                rules: [
+                  {
+                  rule: "%v > %data-series",
+                  visible: true,
+                  backgroundColor: "#ff6666",
+                  'border-color': "#ff6666",
+                  angle: 180,
+                  },
+                  {
+                    rule: "%vv %1 == 0",
+                    visible: false
+                  }]
               },     
              
                 rules: [{
                     rule: "%v <= %data-series",
-                    lineColor: "#00cc00"
-                }],
+                    lineColor: "#00cc00",
+                }
+              ],
                  
-                   animation: {
-                    effect: 1,
-                    method: 0,
-                 }
-              
+                animation: {
+                effect: 1,
+                method: 0,
+              },
                   
             }
           ]
