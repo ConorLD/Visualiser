@@ -132,10 +132,17 @@ class App extends Component
       graphset: [...this.state.graphset, {
           type: "mixed", 
           title: {
-            text: this.state.name[index] + "    ペナルティ x  重み = " + (this.state.normalPenalty[index]*this.state.weight[index]),
+            text: this.state.name[index] + "    ペナルティ x  重み = " ,
             color: this.state.textColor,
-            fontSize: "14px",
+            fontSize: "12px",
           },
+
+          subtitle: {
+            text: this.state.normalPenalty[index] + " x " + this.state.weight[index] + " = " + (this.state.normalPenalty[index]*this.state.weight[index]),
+            color: this.state.textColor,
+            offsetX: 35.0
+          },
+
           'scroll-x': {
 
           },
@@ -202,7 +209,6 @@ class App extends Component
               animation: {
                 effect: 1,
                 method: 0,
-                sequence: 1
               }
             },
             {
@@ -217,7 +223,6 @@ class App extends Component
               animation: {
                 effect: 1,
                 method: 0,
-                sequence: 1
               }
             },
             {
@@ -234,13 +239,10 @@ class App extends Component
                     rule: "%v <= %data-series",
                     lineColor: "#00cc00"
                 }],
-                  tooltip: {
-                    "text": "%v, data = %data-series"
-                  },
+                 
                    animation: {
                     effect: 1,
                     method: 0,
-                    sequence: 1 ,
                  }
               
                   
@@ -250,9 +252,17 @@ class App extends Component
     })
 
     this.setState({
-      penalty: this.state.normalPenalty,
+      penalty: this.state.mulPenalty,
     })
     this.getTotalPenalty()
+
+    if ((index+1) %3 === 0)
+    {
+      this.updateData();
+      this.setState({
+        graphset: []
+      })
+    }
 
   }
 
@@ -282,7 +292,6 @@ class App extends Component
     this.setState({
       penalty: this.state.mulPenalty,
     }, () => this.getTotalPenalty());
-
   }
 
   handleChange(file) 
@@ -296,9 +305,7 @@ class App extends Component
 
   };
 
-  updateData(result) {
-    var data = result.data
-    console.log(data)
+  updateData() {
     
     this.setState({
       chartData: {
@@ -307,9 +314,12 @@ class App extends Component
       },
     }, ()=> console.log(this.state.chartData))
 
-    this.setState({
-      charts: <ZChart chartData={this.state.chartData}></ZChart>  
-    })
+    if (this.state.graphset.length)
+    {
+      this.setState({
+        charts: [...this.state.charts, <ZChart chartData={this.state.chartData}></ZChart>]
+      })
+    }
   }
 
  
@@ -323,7 +333,7 @@ class App extends Component
             <p>日時 = {this.state.date}</p>
         </div>
         <div className="Text">
-          <h1>          全体のペナルティ = <strong>{this.state.sumofpenalty.toFixed(3)}</strong></h1>
+          <h1>全体のペナルティ = <strong>{this.state.sumofpenalty.toFixed(3)}</strong></h1>
           <div className="RadioButton">
             <p>重みをかける前<input type="radio" name="test" onClick={this.normalWeight} defaultChecked></input></p>
             <p>重みをかけた後<input type="radio" name="test" onClick={this.multiplyWeight}></input></p>

@@ -36,11 +36,11 @@ const Container = styled.div`
 function StyledDropzone({handleChange2}) {
 
   return (
-    <Dropzone onDrop={acceptedFiles => handleChange2(acceptedFiles)}>
+    <Dropzone onDrop={acceptedFiles => handleChange2(acceptedFiles)} accept=".tsv, .csv">
   {({getRootProps, getInputProps, isDragAccept, isDragActive, isDragReject}) => (
     <section>
-      <div {...getRootProps()} className="container">
-        <Container>
+      <div className="container">
+        <Container {...getRootProps({isDragActive, isDragAccept, isDragReject})} >
           <input {...getInputProps()} />
           <p>Import TSV or CSV files</p>
           <em>Drag and drop or click to select your file</em>
